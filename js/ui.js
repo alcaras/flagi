@@ -13,6 +13,18 @@ const SEATS = [
   { color: '#ee8330', name: 'Amber' },
 ];
 
+// Classical ruler personas for the AI types, matched to how each one
+// actually plays (see js/ai.js).
+const AI_PERSONAS = {
+  rvalid:   { title: 'Pretender', blurb: 'claims land at whim' },
+  renemy:   { title: 'Warlord',   blurb: 'wars on one rival without mercy' },
+  repeace:  { title: 'Consul',    blurb: 'keeps the peace until power favors them' },
+  bider:    { title: 'Regent',    blurb: 'bides their time, then turns on the weak' },
+  cutter:   { title: 'Strategos', blurb: 'severs supply lines for maximum ruin' },
+  holistic: { title: 'Emperor',   blurb: 'weighs conquest and defense alike' },
+  marshal:  { title: 'Imperator', blurb: 'calculates the odds of empire' },
+};
+
 const SPEEDS = [
   { ms: 600, label: 'SLOW' },
   { ms: 260, label: 'NORMAL' },
@@ -133,12 +145,13 @@ function showStartScreen() {
       row.className = 'opp-row';
       row.innerHTML = `<div class="pennant" style="--c:${s.color}"></div>`;
       if (i + 1 === setup.seat) {
-        row.innerHTML += `<div class="who"><b>YOU</b> — ${s.name}</div><div class="who">commander-in-chief</div>`;
+        row.innerHTML += `<div class="who"><b>YOU</b> — ${s.name}</div><div class="who">Ruler Type</div>`;
       } else {
         row.innerHTML += `<div class="who">${s.name}</div>`;
         const sel = document.createElement('select');
-        sel.innerHTML = `<option value="any">any (surprise me)</option>` +
-          AI_NAMES.map(n => `<option value="${n}">${n}</option>`).join('');
+        sel.innerHTML = `<option value="any">Fate decides</option>` +
+          AI_NAMES.map(n =>
+            `<option value="${n}">${AI_PERSONAS[n].title} — ${AI_PERSONAS[n].blurb}</option>`).join('');
         sel.value = setup.aiChoice[i];
         sel.onchange = () => { setup.aiChoice[i] = sel.value; };
         row.appendChild(sel);
@@ -178,7 +191,7 @@ function startGame() {
       ais.push(null);
     } else {
       const type = resolveAIName(setup.aiChoice[i], Math.random);
-      displayNames.push(type.charAt(0).toUpperCase() + type.slice(1));
+      displayNames.push(AI_PERSONAS[type].title);
       ais.push(createAI(type, i + 1));
     }
   }

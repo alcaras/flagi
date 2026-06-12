@@ -36,11 +36,21 @@ open http://localhost:8123
 
 ## AI personalities
 
-Six ported from the 2005 `FlagiAI.py` — `rvalid`, `renemy`, `repeace`,
-`bider`, `cutter`, `holistic` — plus the new `marshal`, an expected-value
-player with leader-targeting politics and watchtower awareness. In
-benchmarks `holistic` still edges classic games; `marshal` leads when
-variants are on.
+Six ported from the 2005 `FlagiAI.py`, plus one new, each presented as a
+ruler type:
+
+| ruler | internal | plays like |
+|---|---|---|
+| Pretender | `rvalid` | claims land at whim |
+| Warlord | `renemy` | wars on one rival without mercy |
+| Consul | `repeace` | keeps the peace until power favors them |
+| Regent | `bider` | bides their time, then turns on the weak |
+| Strategos | `cutter` | severs supply lines for maximum ruin |
+| Emperor | `holistic` | weighs conquest and defense alike |
+| Imperator | `marshal` | new (2026): expected-value play, leader-targeting politics, watchtower awareness |
+
+In benchmarks the Emperor still edges classic games; the Imperator leads
+when variants are on.
 
 ## Simulator
 
