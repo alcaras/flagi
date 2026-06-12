@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FLAGI — a small war of flags</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Staatliches&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logotype">
+      <span class="word">FLAGI</span>
+      <span class="flags" id="logo-flags"></span>
+      <span class="tagline">a small war of flags</span>
+    </div>
+    <div class="hud">
+      <span id="hud-turn">—</span>
+      <button id="btn-speed" class="btn">TEMPO: NORMAL</button>
+      <button id="btn-resign" class="btn">RESIGN</button>
+      <button id="btn-new" class="btn">NEW GAME</button>
+    </div>
+  </header>
+  <main>
+    <section id="board-wrap">
+      <svg id="board" role="application" aria-label="Flagi hex board"></svg>
+    </section>
+    <aside id="panel">
+      <div class="panel-title">SITUATION</div>
+      <div id="roster"></div>
+      <div id="dice">
+        <div class="die" id="die-face">·</div>
+        <div class="die-text" id="die-text">No engagements yet.</div>
+      </div>
+      <div class="panel-title">DISPATCHES</div>
+      <div id="log"></div>
+    </aside>
+  </main>
+  <div id="overlay" class="open">
+    <div id="overlay-card"></div>
+  </div>
+</div>
+<script type="module" src="js/ui.js"></script>
+</body>
+</html>

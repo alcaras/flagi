@@ -1,0 +1,10 @@
+{
+  "name": "flagi",
+  "version": "0.1.0",
+  "description": "Flagi — hex-grid territory game (HTML/JS port of the 2005 Tkinter original)",
+  "type": "module",
+  "scripts": {
+    "sim": "node sim.js 50",
+    "serve": "python3 -m http.server 8123"
+  }
+}
