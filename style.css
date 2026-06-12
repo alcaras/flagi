@@ -421,6 +421,8 @@ main {
 }
 
 .ov-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.ov-row select,
+.ov-row input[type="text"] { flex: 1 1 0; min-width: 0; }
 
 input[type="text"], select {
   font-family: "IBM Plex Mono", monospace;

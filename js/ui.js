@@ -66,7 +66,7 @@ function showStartScreen() {
   card.innerHTML = `
     <div class="ov-title">FLAGI</div>
     <div class="ov-flags">${SEATS.map(s => `<span style="color:${s.color}">⚑</span>`).join('')}</div>
-    <div class="ov-sub">a small war of flags · est. 2005, now with hexes</div>
+    <div class="ov-sub">a small war of flags</div>
 
     <div class="ov-section">Your Command</div>
     <div class="ov-row">
