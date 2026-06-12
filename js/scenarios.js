@@ -9,26 +9,31 @@
 import { key } from './hex.js';
 
 const ISLES_MAP = [
-  //          1111111111222
-  //0123456789012345678901
-  '             ####     ', // northern Scotland
-  '            ######    ',
-  '            ##E###    ', // Edinburgh
-  '     #      #####     ',
-  '   ###2    2####      ', // Belfast — Stranraer ferry (2)
-  '  ##D###    ####      ', // Dublin
-  '  ######    ####      ',
-  '  ##T##    #####      ', // tower: central Ireland
-  '   ##1    1##Y###     ', // Dublin — Holyhead ferry (1) · York
-  '   #3      #######    ', // Rosslare ferry (3)
-  '          #####T###   ', // tower: central England
-  '          #########   ',
-  '          6###L#5#4   ', // Penzance (6) · London · Portsmouth (5) · Dover (4)
-  '                      ', // the Channel
-  '   3#6##     5##4###  ', // Brittany (3, 6) · Le Havre (5) · Calais (4)
-  '  ##R##########P###   ', // Rennes · Paris
-  '   ####T#########     ', // tower: central France
-  '    ####   ######     ',
+  //   1111111111222222
+  //01234567890123456789012345
+  '                ###       ', // Caithness — northern tip of Scotland
+  '               ####       ',
+  '              #####       ',
+  '             ######       ', // the Highlands
+  '             ######       ',
+  '              #####       ',
+  '              ###E#       ', // central belt — Edinburgh on the east coast
+  '        ##     ####       ', // Antrim · the borders
+  '      ###2   2####        ', // Belfast (2) — North Channel — Stranraer (2)
+  '     #####     ###        ',
+  '     ####D     ####       ', // Dublin on the Irish Sea
+  '     #T###1    #Y##       ', // tower: Athlone · Dún Laoghaire (1) · York
+  '     #####    1#####      ', // Holyhead (1) on Anglesey, Wales
+  '      ##3     ########    ', // Rosslare (3) · the Midlands
+  '             ####T#####   ', // tower: the Midlands · East Anglia
+  '             ####L####    ', // London
+  '          6####5##4       ', // Penzance (6) · Portsmouth (5) · Dover (4)
+  '                          ', // the Channel
+  '                    4###  ', // Calais (4)
+  '                5   ##### ', // Cherbourg (5) on the Cotentin · Picardy
+  '       3####6  #########  ', // Roscoff (3) · St-Malo (6) · Normandy
+  '     ###R#####T#####P###  ', // Brittany · Rennes · tower: Le Mans · Paris
+  '      ######  ########    ', // the Loire · Île-de-France
 ];
 
 function parseMap(rows, capitalOrder) {
