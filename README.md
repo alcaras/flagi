@@ -24,6 +24,18 @@ open http://localhost:8123
 - Capitals fall only on a 6 — and yield the victim's entire empire,
   eliminating them. Last flag standing wins.
 
+## Maps
+
+- **Hexagon (classic)** — symmetric hex board, capitals at the six corners,
+  in three sizes.
+- **The Isles** — a hand-drawn scenario map of Britain, Ireland, and
+  northern France (160 hexes, `js/scenarios.js`). Three capitals on Britain
+  (Edinburgh, York, London), one on Ireland (Dublin), two in France (Rennes,
+  Paris). Six **ferry routes** (Dublin–Holyhead, Belfast–Stranraer,
+  Rosslare–Brittany, Dover–Calais, Portsmouth–Le Havre, Penzance–Roscoff)
+  count as adjacency for movement *and* capital connectivity — invade across
+  the sea, or cut an enemy's port and watch their beachhead drown.
+
 ## Optional variants (start screen)
 
 - **Broken ground** — ~12% of the board is impassable terrain, removed in

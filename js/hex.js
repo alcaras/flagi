@@ -11,11 +11,28 @@ export const parseKey = (k) => k.split(',').map(Number);
 
 const neighborCache = new Map();
 
+// Extra adjacencies beyond the six hex sides — e.g. scenario ferry routes
+// across the sea. Set per game; cleared between games.
+let extraLinks = new Map();
+
+export function setExtraLinks(pairs) {
+  extraLinks = new Map();
+  for (const [a, b] of pairs) {
+    if (!extraLinks.has(a)) extraLinks.set(a, []);
+    if (!extraLinks.has(b)) extraLinks.set(b, []);
+    extraLinks.get(a).push(b);
+    extraLinks.get(b).push(a);
+  }
+  neighborCache.clear();
+}
+
 export function neighborsOf(k) {
   let n = neighborCache.get(k);
   if (!n) {
     const [q, r] = parseKey(k);
     n = DIRS.map(([dq, dr]) => key(q + dq, r + dr));
+    const extra = extraLinks.get(k);
+    if (extra) n = n.concat(extra);
     neighborCache.set(k, n);
   }
   return n;

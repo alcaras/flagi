@@ -6,7 +6,7 @@
 //   cap:   0 = ordinary land, p = player p's capital (a captured capital
 //          becomes ordinary land, as in the original)
 
-import { key, neighborsOf, hexagonKeys, cornerKeys, orbitOf } from './hex.js';
+import { key, neighborsOf, hexagonKeys, cornerKeys, orbitOf, setExtraLinks } from './hex.js';
 
 // Deterministic RNG for simulations and seeded games.
 export function mulberry32(seed) {
@@ -72,40 +72,62 @@ export class Game {
   // terrain: 'open' (classic) or 'broken' (impassable hexes, mirrored 6-fold).
   // towers: place 3 symmetric watchtowers; holding any grants a 3rd move
   // per turn (capped at one extra regardless of towers held).
+  // scenario: a hand-authored map (see scenarios.js) with its own cells,
+  // capitals, tower sites, and ferry links; overrides radius/terrain.
   constructor({ radius = 6, players, rng = Math.random,
                 winCondition = 'domination', majorityPct = 0.6,
-                terrain = 'open', towers = false }) {
+                terrain = 'open', towers = false, scenario = null }) {
     this.radius = radius;
     this.rng = rng;
     this.winCondition = winCondition;
+    this.scenario = scenario;
     this.n = players.length;
     this.playerNames = players.slice();
 
+    // adjacency extras (ferries) are global module state — set before any
+    // connectivity work, cleared when the next game starts
+    setExtraLinks(scenario ? scenario.links : []);
+
     this.board = new Map();
-    for (const k of hexagonKeys(radius)) {
-      this.board.set(k, { owner: 0, cap: 0, tower: false });
-    }
-
     this.capitalOf = new Array(this.n + 1).fill(null);
-    const corners = cornerKeys(radius);
-    for (let i = 0; i < this.n; i++) {
-      const k = corners[i];
-      this.board.set(k, { owner: i + 1, cap: i + 1, tower: false });
-      this.capitalOf[i + 1] = k;
-    }
-
-    // three watchtowers, each equidistant from its two flanking capitals
     this.towerKeys = [];
-    if (towers) {
-      const s = Math.max(1, Math.round(radius / 3));
-      for (const [q, r] of [[2 * s, -s], [-s, 2 * s], [-s, -s]]) {
-        const k = key(q, r);
-        const c = this.board.get(k);
-        if (c) { c.tower = true; this.towerKeys.push(k); }
-      }
-    }
 
-    if (terrain === 'broken') this.carveTerrain();
+    if (scenario) {
+      for (const k of scenario.cells) {
+        this.board.set(k, { owner: 0, cap: 0, tower: false });
+      }
+      for (let i = 0; i < this.n; i++) {
+        const k = scenario.capitals[i];
+        this.board.set(k, { owner: i + 1, cap: i + 1, tower: false });
+        this.capitalOf[i + 1] = k;
+      }
+      if (towers) {
+        for (const k of scenario.towers) {
+          const c = this.board.get(k);
+          if (c) { c.tower = true; this.towerKeys.push(k); }
+        }
+      }
+    } else {
+      for (const k of hexagonKeys(radius)) {
+        this.board.set(k, { owner: 0, cap: 0, tower: false });
+      }
+      const corners = cornerKeys(radius);
+      for (let i = 0; i < this.n; i++) {
+        const k = corners[i];
+        this.board.set(k, { owner: i + 1, cap: i + 1, tower: false });
+        this.capitalOf[i + 1] = k;
+      }
+      // three watchtowers, each equidistant from its two flanking capitals
+      if (towers) {
+        const s = Math.max(1, Math.round(radius / 3));
+        for (const [q, r] of [[2 * s, -s], [-s, 2 * s], [-s, -s]]) {
+          const k = key(q, r);
+          const c = this.board.get(k);
+          if (c) { c.tower = true; this.towerKeys.push(k); }
+        }
+      }
+      if (terrain === 'broken') this.carveTerrain();
+    }
 
     this.inPlay = new Array(this.n).fill(true);
     this.timeOfDeath = new Array(this.n).fill(0);

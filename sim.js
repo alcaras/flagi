@@ -6,6 +6,7 @@
 
 import { Game, mulberry32 } from './js/game.js';
 import { AI_NAMES, createAI } from './js/ai.js';
+import { SCENARIOS } from './js/scenarios.js';
 
 const args = process.argv.slice(2);
 const nums = args.filter(a => /^\d+$/.test(a)).map(Number);
@@ -16,6 +17,7 @@ const opts = {
   winCondition: flags.has('majority') ? 'majority' : 'domination',
   terrain: flags.has('terrain') ? 'broken' : 'open',
   towers: flags.has('towers'),
+  scenario: flags.has('isles') ? SCENARIOS.isles : null,
 };
 const rng = mulberry32(seed);
 
@@ -74,7 +76,8 @@ for (let g = 0; g < games; g++) {
 
 console.log(`${games} games (${opts.winCondition}` +
   `${opts.terrain === 'broken' ? ', terrain' : ''}` +
-  `${opts.towers ? ', towers' : ''}), avg ${(totalTurns / games).toFixed(1)} turns/game\n`);
+  `${opts.towers ? ', towers' : ''}` +
+  `${opts.scenario ? ', ' + opts.scenario.id : ''}), avg ${(totalTurns / games).toFixed(1)} turns/game\n`);
 console.log('avg-place-pts  wins  games  ai');
 const rows = AI_NAMES
   .map(n => [n, plays[n] ? score[n] / plays[n] : 0])

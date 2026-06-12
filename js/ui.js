@@ -3,6 +3,7 @@
 import { Game } from './game.js';
 import { AI_NAMES, resolveAIName, createAI } from './ai.js';
 import { toPixel, hexPoints, parseKey, hexagonKeys } from './hex.js';
+import { SCENARIOS } from './scenarios.js';
 
 const SEATS = [
   { color: '#e04b3a', name: 'Crimson' },
@@ -57,11 +58,13 @@ const setup = {
   win: 'domination',
   terrain: 'open',
   towers: false,
+  map: 'hexagon',
   aiChoice: SEATS.map(() => 'any'),
 };
 if (params.get('win') === 'majority') setup.win = 'majority';
 if (params.has('terrain')) setup.terrain = 'broken';
 if (params.has('towers')) setup.towers = true;
+if (params.get('map') && SCENARIOS[params.get('map')]) setup.map = params.get('map');
 
 // player colors as CSS vars, single source of truth here
 SEATS.forEach((s, i) =>
@@ -90,6 +93,12 @@ function showStartScreen() {
     <div id="su-opps"></div>
 
     <div class="ov-section">Theater</div>
+    <div class="ov-row">
+      <select id="su-map">
+        <option value="hexagon">Hexagon — classic</option>
+        <option value="isles">The Isles — Britain, Ireland &amp; France</option>
+      </select>
+    </div>
     <div class="ov-row">
       <select id="su-radius">
         <option value="5">Small — 91 hexes</option>
@@ -161,6 +170,14 @@ function showStartScreen() {
   }
   renderOpps();
 
+  function syncMapControls() {
+    const scenario = setup.map !== 'hexagon';
+    $('su-radius').disabled = scenario;
+    $('su-terrain').disabled = scenario; // scenarios bring their own geography
+  }
+  $('su-map').value = setup.map;
+  $('su-map').onchange = (e) => { setup.map = e.target.value; syncMapControls(); };
+  syncMapControls();
   $('su-radius').value = String(setup.radius);
   $('su-radius').onchange = (e) => { setup.radius = parseInt(e.target.value, 10); };
   $('su-terrain').value = setup.terrain;
@@ -202,6 +219,7 @@ function startGame() {
     winCondition: setup.win,
     terrain: setup.terrain,
     towers: setup.towers,
+    scenario: setup.map === 'hexagon' ? null : SCENARIOS[setup.map],
   });
   lastPending = 0;
   document.documentElement.style.setProperty('--me', SEATS[humanSeat - 1].color);
@@ -231,7 +249,9 @@ function buildBoard() {
   starEls.clear();
 
   const size = 24;
-  const frame = hexagonKeys(game.radius); // full footprint incl. carved terrain
+  // scenario maps draw only their land; classic draws the full hexagon
+  // footprint so carved terrain shows as recessed voids
+  const frame = game.scenario ? [...game.board.keys()] : hexagonKeys(game.radius);
   let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
   for (const k of frame) {
     const { x, y } = toPixel(k, size);
@@ -242,6 +262,21 @@ function buildBoard() {
   svg.setAttribute('viewBox',
     `${(minX - pad).toFixed(1)} ${(minY - pad).toFixed(1)} ` +
     `${(maxX - minX + 2 * pad).toFixed(1)} ${(maxY - minY + 2 * pad).toFixed(1)}`);
+
+  // ferry routes first, so land sits above the sea lanes
+  if (game.scenario) {
+    for (const [a, b] of game.scenario.links) {
+      const pa = toPixel(a, size);
+      const pb = toPixel(b, size);
+      const line = document.createElementNS(SVGNS, 'line');
+      line.setAttribute('x1', pa.x.toFixed(1));
+      line.setAttribute('y1', pa.y.toFixed(1));
+      line.setAttribute('x2', pb.x.toFixed(1));
+      line.setAttribute('y2', pb.y.toFixed(1));
+      line.setAttribute('class', 'ferry');
+      svg.appendChild(line);
+    }
+  }
 
   for (const k of frame) {
     const { x, y } = toPixel(k, size);
@@ -294,10 +329,11 @@ function buildRoster() {
     seat.id = `seat-${i + 1}`;
     seat.style.setProperty('--c', SEATS[i].color);
     const kind = ais[i] ? 'AI' : 'YOU';
+    const cap = game.scenario ? ` · ${game.scenario.capitalNames[i]}` : '';
     seat.innerHTML = `
       <span class="marker"></span>
       <div class="pennant"></div>
-      <div class="name">${displayNames[i]} <span class="kind">· ${kind}</span></div>
+      <div class="name">${displayNames[i]} <span class="kind">· ${kind}${cap}</span></div>
       <div class="count">1</div>
       <div class="bar">${game.majorityTarget
         ? `<span class="tick" style="left:${(100 * game.majorityTarget / game.board.size).toFixed(1)}%"></span>`
